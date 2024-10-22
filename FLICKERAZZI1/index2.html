@@ -1,0 +1,413 @@
+<?php
+// index.php
+
+// Start the session (optional, useful for future enhancements)
+session_start();
+
+// Database configuration
+$servername = "localhost"; // Change if your DB is hosted elsewhere
+$username_db = "your_db_username"; // Replace with your DB username
+$password_db = "your_db_password"; // Replace with your DB password
+$dbname = "flickerazzi";
+
+// Create connection
+$conn = new mysqli($servername, $username_db, $password_db, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Handle AJAX requests
+if (isset($_POST['action'])) {
+    $action = $_POST['action'];
+
+    if ($action == 'add_comment') {
+        // Sanitize input
+        $movie_title = $conn->real_escape_string($_POST['movie_title']);
+        $username = $conn->real_escape_string($_POST['username']);
+        $comment = $conn->real_escape_string($_POST['comment']);
+
+        // Insert comment into database
+        $sql = "INSERT INTO comments (movie_title, username, comment) VALUES ('$movie_title', '$username', '$comment')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to add comment.']);
+        }
+        exit();
+    }
+
+    if ($action == 'fetch_comments') {
+        $movie_title = $conn->real_escape_string($_POST['movie_title']);
+        $sql = "SELECT username, comment, created_at FROM comments WHERE movie_title='$movie_title' ORDER BY created_at DESC";
+        $result = $conn->query($sql);
+
+        $comments = [];
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $comments[] = [
+                    'username' => htmlspecialchars($row['username']),
+                    'comment' => htmlspecialchars($row['comment']),
+                    'created_at' => $row['created_at']
+                ];
+            }
+        }
+
+        echo json_encode(['status' => 'success', 'comments' => $comments]);
+        exit();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flickerazzi</title>
+
+    <style>
+        /* [Your existing CSS styles here] */
+
+        /* Additional styles for the comment section */
+        .comment {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+        }
+
+        .comment .username {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment .timestamp {
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Flickerazzi</h1>
+        <div class="search-bar">
+            <input type="text" placeholder="Search here">
+            <button>Search</button>
+        </div>
+        <div class="menu" onclick="toggleMenu()">&#9776;</div>
+
+    <!-- Sidebar (Initially hidden) -->
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+        <a href="#">Recent</a>
+        <a href="#tamil">Tamil</a>
+        <a href="#hindi">Hindi</a>
+        <a href="#">Contact</a>
+        
+    </div>
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById("mySidebar");
+
+            // Toggle sidebar width to open/close
+            if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+            } else {
+                sidebar.style.width = "250px";
+            }
+        }
+    </script>
+    </div>
+
+    <div class="main-content">
+        <!-- Main content code goes here -->
+    </div>
+    <div class="main-content">
+        <div class="slider">
+            <div class="slider-container">
+                <img src="love next door.jpg" alt="Movie 1" onclick="openModal('love next door.jpg', 'LOVE NEXT DOOR', 'This is a review for Love Next Door. It is an engaging film that captivates the audience with its storyline and characters. The cinematography and acting are top-notch, making it a must-watch for movie enthusiasts.')">
+                <div class="info-box">LOVE NEXT DOOR</div>
+                <img src="it ends with us.jpg" alt="Movie 2" onclick="openModal('it ends with us.jpg', 'IT ENDS WITH US', 'This is a review for It Ends With Us. A beautifully crafted film that explores deep emotional themes with grace and sensitivity. The performances are heartfelt, and the narrative is powerful and thought-provoking.')">
+                <div class="info-box">IT ENDS WITH US</div>
+                <img src="goblin1.jpeg" alt="Movie 3" onclick="openModal('goblin1.jpeg', 'END GAME', 'End Game, a mesmerizing tale that blends fantasy with reality. The special effects and storytelling are remarkable, making it a memorable experience for viewers.')">
+                <div class="info-box">END GAME</div>
+            </div>
+            <div class="arrow-left" onclick="prevSlide()">&#10094;</div>
+            <div class="arrow-right" onclick="nextSlide()">&#10095;</div>
+        </div>
+        
+        <div class="popular-movies">
+            <h2>Popular Movies</h2>
+            <div class="movies-list">
+                <div class="movie" onclick="openModal('dark1.jpg', 'DARK', 'Dark is a gripping thriller that keeps you on the edge of your seat. With a complex plot and intense performances, it’s a film that demands your full attention.')">
+                    <img src="dark.jpg" alt="Movie Poster">
+                    <div class="movie-title">DARK</div>
+                    <div class="stars">★★★★☆</div>
+                </div>
+                <div class="movie" onclick="openModal('goat1.jpeg', 'GOAT', 'GOAT is an inspiring story of perseverance and success. The film is a roller-coaster of emotions, with a stellar cast and a compelling narrative that leaves a lasting impression.')">
+                    <img src="GOAT.jpeg" alt="Movie Poster">
+                    <div class="movie-title">GOAT</div>
+                    <div class="stars">★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<section id="hindi">
+    <div class="tamil-movies">
+        <h2>Hindi Movies</h2>
+        <div class="movies-list">
+            <div class="tamil-movie" onclick="openModal('831.jpeg', '83', '83 is an engaging drama with a captivating storyline and powerful performances. The film offers a fresh perspective and is a treat for fans of Hindi cinema.')">
+                <img src="83.jpeg" alt="hindi Movie 1 Poster">
+                <div class="movie-title">83</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('padmaavat1.jpeg', 'PADMAAVAT', 'Padmaavat combines thrilling action with a compelling story. The film’s high energy and intense scenes make it an exciting watch for action lovers.')">
+                <img src="padmaavat.jpeg" alt="Hindi Movie 2 Poster">
+                <div class="movie-title">PADMAAVAT</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('kabir-singh1.jpg', 'KABIR SINGH', 'Kabir Singh is a captivating film with a rich narrative and impressive visuals. The strong performances and engaging plot make it a standout in Hindi cinema.')">
+                <img src="kabir singh.jpeg" alt="Hindi Movie 3 Poster">
+                <div class="movie-title">KABIR SINGH</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('pathaan1.jpg', 'PATHAAN', 'Pathaan is an emotional journey that explores deep themes with sensitivity and grace. The powerful performances and storytelling make it a memorable film.')">
+                <img src="pathaan.jpg" alt="Hindi Movie 4 Poster">
+                <div class="movie-title">PATHAAN</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('dangal 1.jpg', 'DANGAL', 'Dangal offers an intriguing narrative with unexpected twists and engaging characters. It’s a gripping film that will keep viewers hooked until the very end.')">
+                <img src="dangal.jpg" alt="Hindi Movie 5 Poster">
+                <div class="movie-title">DANGAL</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('satyaprem1.jpg', 'SATYAPREM KE KATHA', 'Satyaprem Ke Katha is a visually stunning film that combines great direction with a compelling story. The film’s excellent production values and performances are noteworthy.')">
+                <img src="satyaprem.jpeg" alt="Hindi Movie 6 Poster">
+                <div class="movie-title">SATYAPREM KE KATHA</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('chennai%20express1.webp', 'CHENNAI EXPRESS', 'Chennai Express is a captivating drama that explores human emotions and relationships with depth. Its strong narrative and performances make it a standout film.')">
+                <img src="chennai express.jpg" alt="Hindi Movie 7 Poster">
+                <div class="movie-title">CHENNAI EXPRESS</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="tamil">
+    <div class="tamil-movies">
+        <h2>Tamil Movies</h2>
+        <div class="movies-list">
+            <div class="tamil-movie" onclick="openModal('maanadu1.jpg', 'MAANADU', 'Maanadu is an engaging drama with a captivating storyline and powerful performances. The film offers a fresh perspective and is a treat for fans of Tamil cinema.')">
+                <img src="maanadu.webp" alt="Tamil Movie 1 Poster">
+                <div class="movie-title">MAANADU</div>
+                <div class="stars">★★★★★</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('vikram1.webp', 'VIKRAM', 'Vikram combines thrilling action with a compelling story. The film’s high energy and intense scenes make it an exciting watch for action lovers.')">
+                <img src="vikram.jpg" alt="Tamil Movie 2 Poster">
+                <div class="movie-title">VIKRAM</div>
+                <div class="stars">★★★★★</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('aruvi1.webp', 'ARUVI', 'Aruvi is a captivating film with a rich narrative and impressive visuals. The strong performances and engaging plot make it a standout in Tamil cinema.')">
+                <img src="aruvi.webp" alt="Tamil Movie 3 Poster">
+                <div class="movie-title">ARUVI</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('athomugam1.jpg', 'ATHOMUGAM', 'Athomugam is an emotional journey that explores deep themes with sensitivity and grace. The powerful performances and storytelling make it a memorable film.')">
+                <img src="athomugam.jpg" alt="Tamil Movie 4 Poster">
+                <div class="movie-title">ATHOMUGAM</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('okk1.jpg', 'O KADHAL KANMANI', 'OK KANMANI offers an intriguing narrative with unexpected twists and engaging characters. It’s a gripping film that will keep viewers hooked until the very end.')">
+                <img src="okk.jpeg" alt="Tamil Movie 5 Poster">
+                <div class="movie-title">OK KANMANI</div>
+                <div class="stars">★★★★★</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('thambi1.jpeg', 'THAMBI', 'Thambi is a visually stunning film that combines great direction with a compelling story. The film’s excellent production values and performances are noteworthy.')">
+                <img src="thambi.jpg" alt="Tamil Movie 6 Poster">
+                <div class="movie-title">THAMBI</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+            <div class="tamil-movie" onclick="openModal('961.webp', '96', '96 is a captivating drama that explores human emotions and relationships with depth. Its strong narrative and performances make it a standout film.')">
+                <img src="96.jpg" alt="Tamil Movie 7 Poster">
+                <div class="movie-title">96</div>
+                <div class="stars">★★★★☆</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="movieModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="movieImage" src="" alt="Movie Poster">
+        <h2 id="movieTitle">Movie Title</h2>
+        <p id="movieDescription">Movie Description</p>
+        
+        <!-- Comment Section -->
+        <div class="comment-section">
+            <h3>Comments</h3>
+            <form id="commentForm">
+                <input type="hidden" id="currentMovie" name="currentMovie" value="">
+                <input type="text" id="usernameInput" name="username" placeholder="Your Name" required style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <textarea id="commentInput" name="comment" rows="3" placeholder="Add a comment..." required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: vertical; font-size: 14px;"></textarea>
+                <button type="submit" style="margin-top: 10px; padding: 8px 16px; background-color: #333; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Submit</button>
+            </form>
+            <div id="commentsList"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let slideIndex = 0;
+
+    function showSlides() {
+        const slides = document.querySelectorAll('.slider img');
+        const totalSlides = slides.length;
+        const sliderContainer = document.querySelector('.slider-container');
+        sliderContainer.style.transform = `translateX(-${slideIndex * 100}%)`;
+    }
+
+    function nextSlide() {
+        const slides = document.querySelectorAll('.slider img');
+        const totalSlides = slides.length;
+        slideIndex = (slideIndex + 1) % totalSlides;
+        showSlides();
+    }
+
+    function prevSlide() {
+        const slides = document.querySelectorAll('.slider img');
+        const totalSlides = slides.length;
+        slideIndex = (slideIndex - 1 + totalSlides) % totalSlides;
+        showSlides();
+    }
+
+    function openModal(imageSrc, title, description) {
+        const modal = document.getElementById('movieModal');
+        document.getElementById('movieImage').src = imageSrc;
+        document.getElementById('movieTitle').textContent = title;
+        document.getElementById('movieDescription').textContent = description;
+        modal.style.display = 'flex';
+
+        // Set current movie title for comments
+        document.getElementById('currentMovie').value = title;
+
+        // Clear previous comments
+        document.getElementById('commentsList').innerHTML = '';
+
+        // Fetch comments for this movie
+        fetchComments(title);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('movieModal');
+        modal.style.display = 'none';
+    }
+
+    // Initialize slider
+    showSlides();
+
+    // Handle comment submission
+    document.getElementById('commentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const movieTitle = document.getElementById('currentMovie').value;
+        const username = document.getElementById('usernameInput').value.trim();
+        const commentText = document.getElementById('commentInput').value.trim();
+
+        if (username === "" || commentText === "") return;
+
+        // Send AJAX request to add comment
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "index.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.status === 'success') {
+                    // Clear input fields
+                    document.getElementById('usernameInput').value = "";
+                    document.getElementById('commentInput').value = "";
+
+                    // Fetch and display updated comments
+                    fetchComments(movieTitle);
+                } else {
+                    alert(response.message);
+                }
+            }
+        };
+        const params = `action=add_comment&movie_title=${encodeURIComponent(movieTitle)}&username=${encodeURIComponent(username)}&comment=${encodeURIComponent(commentText)}`;
+        xhr.send(params);
+    });
+
+    // Function to fetch comments
+    function fetchComments(movieTitle) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "index.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.status === 'success') {
+                    const commentsList = document.getElementById('commentsList');
+                    commentsList.innerHTML = "";
+                    response.comments.forEach(function(comment) {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+
+                        const usernameDiv = document.createElement('div');
+                        usernameDiv.className = 'username';
+                        usernameDiv.textContent = comment.username;
+
+                        const timestampDiv = document.createElement('div');
+                        timestampDiv.className = 'timestamp';
+                        timestampDiv.textContent = comment.created_at;
+
+                        const textDiv = document.createElement('div');
+                        textDiv.className = 'text';
+                        textDiv.textContent = comment.comment;
+
+                        commentDiv.appendChild(usernameDiv);
+                        commentDiv.appendChild(timestampDiv);
+                        commentDiv.appendChild(textDiv);
+
+                        commentsList.appendChild(commentDiv);
+                    });
+                } else {
+                    alert(response.message);
+                }
+            }
+        };
+        const params = `action=fetch_comments&movie_title=${encodeURIComponent(movieTitle)}`;
+        xhr.send(params);
+    }
+
+    // Close modal when clicking outside the content
+    window.onclick = function(event) {
+        const modal = document.getElementById('movieModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Smooth scrolling for sidebar links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+    });
+</script>
+
+</body>
+</html>

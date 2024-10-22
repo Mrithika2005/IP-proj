@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flickerazzi</title>
+  <!-- Include your CSS file here -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: white;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 35px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: white;
+      color: black;
+      padding: 20px;
+      position: relative;
+    }
+
+    .header h1 {
+      margin: 0 auto;
+      font-size: 40px;
+      font-family: 'Baskerville';
+      text-align: center;
+    }
+
+    .menu {
+      font-size: 30px;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 2;
+    }
+
+    /* Sidebar menu styling */
+    .sidebar {
+    height: 100%;
+    width: 0; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    right: 0; /* Positioned to the right */
+    background-color: rgba(17, 17, 17, 0.8);
+    transition: 0.3s;
+    padding-top: 60px;
+    z-index: 999; /* Added z-index for layering */
+}
+
+    /* Links inside the sidebar */
+    .sidebar a {
+      padding: 10px 15px;
+      text-decoration: none;
+      font-size: 20px;
+      color: #fff;
+      display: block;
+      transition: 0.3s;
+    }
+
+    /* Change color on hover */
+    .sidebar a:hover {
+      background-color: #575757;
+    }
+
+    /* Close button inside the sidebar */
+    .closebtn {
+      position: absolute;
+      top: 10px;
+      left: 25px;
+      font-size: 36px;
+      cursor: pointer;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 30px;
+      transition: 0.5s;
+    }
+
+    .movie {
+      position: relative;
+    }
+
+    .movie img {
+      width: 181.5px;
+      height: 272.25px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .movie .movie-title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      text-align: center;
+      padding: 5px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .movie:hover .movie-title {
+      display: block;
+    }
+
+    .stars {
+      color: gold;
+      margin-top: 5px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .tamil-movies {
+      margin: 40px 0;
+      padding-left: 30px;
+    }
+
+    .tamil-movies h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .tamil-movies .movies-list {
+      display: flex;
+      justify-content: flex-start;
+      gap: 22px;
+      padding-left: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tamil-movie {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .tamil-movie img {
+      width: 181.5px;
+      height: 272.25px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .tamil-movie .movie-title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      text-align: center;
+      padding: 5px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .tamil-movie:hover .movie-title {
+      display: block;
+    }
+
+
+    section {
+      padding: 20px 20px; /* Adding padding for spacing */
+      min-height: 30vh; /* Ensure each section has a minimum height */
+      background-color: #111; /* Optional: a light background for sections */
+    }
+  </style>
+</head>
+<body>
+    
+  <div class="header">
+    <h1>F L I C K E R A Z Z I</h1>
+        <div class="menu" onclick="toggleMenu()">&#9776;</div>
+    </div>
+
+  <!-- Sidebar (Initially hidden) -->
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+    <a href="#tamil">Tamil</a>
+    <a href="#hindi">Hindi</a>
+    <a href="index1.php">Home</a>
+
+  </div>
+  <script>
+    function toggleMenu() {
+      const sidebar = document.getElementById("mySidebar");
+
+      // Toggle sidebar width to open/close
+      if (sidebar.style.width === "250px") {
+        sidebar.style.width = "0";
+      } else {
+        sidebar.style.width = "250px";
+      }
+    }
+  </script>
+
+<section id="hindi">
+  <div class="tamil-movies">
+    <h2>Hindi Movies</h2>
+    <div class="movies-list">
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=UEReI2rn7GU"><img src="83.jpeg" alt="hindi Movie 1 Poster"></a>
+        <div class="movie-title">83</div>
+      </div>
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=5Paw8kazId8"><img src="padmaavat.jpeg" alt="Hindi Movie 2 Poster"></a>
+        <div class="movie-title">PADMAAVAT</div>
+      </div>
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=RiANSSgCuJk"><img src="kabir singh.jpeg" alt="Hindi Movie 3 Poster"></a>
+        <div class="movie-title">KABIR SINGH</div>
+      </div>
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=vqu4z34wENw"><img src="pathaan.jpg" alt="Hindi Movie 4 Poster"></a>
+        <div class="movie-title">PATHAAN</div>
+      </div>
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=x_7YlGv9u1g"><img src="dangal.jpg" alt="Hindi Movie 5 Poster"></a>
+        <div class="movie-title">DANGAL</div>
+      </div>
+      <div class="tamil-movie">
+        <img src="satyaprem.jpeg" alt="Hindi Movie 6 Poster">
+        <div class="movie-title">SATYAPREM KE KATHA</div>
+      </div>
+      <div class="tamil-movie">
+        <img src="chennai express.jpg" alt="Hindi Movie 7 Poster">
+        <div class="movie-title">CHENNAI EXPRESS</div>
+        <div class="stars">★★★★☆</div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <section id="tamil">
+  <div class="tamil-movies">
+    <h2>Tamil Movies</h2>
+    <div class="movies-list">
+      <div class="tamil-movie">
+        <img src="maanadu.webp" alt="Tamil Movie 1 Poster">
+        <div class="movie-title">MAANADU</div>
+      </div>
+      <div class="tamil-movie">
+        <img src="vikram.jpg" alt="Tamil Movie 2 Poster">
+        <div class="movie-title">VIKRAM</div>
+      </div>
+      <div class="tamil-movie">
+        <img src="aruvi.webp" alt="Tamil Movie 3 Poster">
+        <div class="movie-title">ARUVI</div>
+      </div>
+      <div class="tamil-movie">
+        <img src="athomugam.jpg" alt="Tamil Movie 4 Poster">
+        <div class="movie-title">ATHOMUGAM</div>
+      </div>
+      <div class="tamil-movie">
+        <a href="https://www.youtube.com/watch?v=2mBG4vlhcCc"><img src="okk.jpeg" alt="Tamil Movie 5 Poster"></a>
+        </div>
+      <div class="tamil-movie" movie_id="7">
+        <img src="thambi.jpg" alt="Tamil Movie 6 Poster">
+      </div>
+      <div class="tamil-movie">
+        <img src="96.jpg" alt="Tamil Movie 7 Poster">
+        <div class="movie-title">96</div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+
+</script>
+
+</body>
+</html>
